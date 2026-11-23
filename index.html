@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#101a20">
+  <meta name="description" content="Layla Web — عالم ثلاثي الأبعاد قابل للاستكشاف.">
+  <title>Layla Web — عالم ليلى</title>
+  <link rel="stylesheet" href="./styles.css">
+  <script type="importmap">
+    {"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js"}}
+  </script>
+</head>
+<body>
+  <main id="game" aria-label="عالم ليلى ثلاثي الأبعاد">
+    <canvas id="world" aria-label="مشهد العالم"></canvas>
+    <header class="topbar">
+      <div class="brand"><span class="brand-mark">L</span><div><strong>LAYLA</strong><small>عالم قابل للاستكشاف</small></div></div>
+      <div class="world-label"><span class="live-dot"></span> الوادي الهادئ <span class="separator">•</span> الفصل الأول</div>
+      <button id="help-button" class="icon-button" aria-label="التعليمات">؟</button>
+    </header>
+    <section class="intro" id="intro">
+      <p class="eyebrow">A NEW WORLD BEGINS</p>
+      <h1>مكانٌ يتّسع<br><em>للحكايات.</em></h1>
+      <p class="intro-copy">اقترب من ليلى، تجوّل في الوادي، واكتشف ما يخفيه هذا العالم.</p>
+      <button id="start-button" class="primary-button">ادخل العالم <span>←</span></button>
+      <div class="intro-note">تجربة ثلاثية الأبعاد — تعمل مباشرة في المتصفح</div>
+    </section>
+    <aside class="hud" id="hud" hidden>
+      <div class="hud-card"><span class="hud-caption">الموقع الحالي</span><strong id="location-name">بداية الوادي</strong></div>
+      <div class="hud-card objective"><span class="hud-caption">مهمتك الأولى</span><strong>اقترب من ليلى وتحدث معها</strong></div>
+    </aside>
+    <div class="crosshair" id="crosshair" hidden></div>
+    <div class="interaction" id="interaction" hidden><span>اضغط E</span> للتفاعل</div>
+    <section class="dialogue" id="dialogue" hidden>
+      <div class="dialogue-avatar">L</div>
+      <div><span class="dialogue-name">ليلى</span><p id="dialogue-text">أهلاً بك. كنت أنتظرك.</p></div>
+      <button id="close-dialogue" aria-label="إغلاق">×</button>
+    </section>
+    <section class="help-panel" id="help-panel" hidden>
+      <button id="close-help" aria-label="إغلاق">×</button><h2>كيف تتحرك؟</h2>
+      <p><b>W A S D</b> أو الأسهم — الحركة</p><p><b>الفأرة</b> — توجيه الكاميرا</p><p><b>E</b> — التفاعل مع ليلى</p><p><b>Space</b> — القفز</p><p>على الهاتف: استخدم عصا الحركة واسحب الشاشة لتدوير الكاميرا.</p>
+    </section>
+    <div class="mobile-controls" id="mobile-controls" hidden>
+      <div class="stick" id="stick"><div class="stick-knob" id="stick-knob"></div></div>
+      <button id="mobile-action" class="action-button">تفاعل</button>
+    </div>
+    <footer class="bottom-hint" id="bottom-hint">حرّك شخصيتك لاستكشاف المكان</footer>
+    <div class="loading" id="loading"><div class="loader-mark">L</div><span>يجري تشكيل العالم...</span><div class="loading-track"><i></i></div></div>
+  </main>
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>
