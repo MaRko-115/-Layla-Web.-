@@ -48,6 +48,25 @@
     <footer class="bottom-hint" id="bottom-hint">حرّك شخصيتك لاستكشاف المكان</footer>
     <div class="loading" id="loading"><div class="loader-mark">L</div><span>يجري تشكيل العالم...</span><div class="loading-track"><i></i></div></div>
   </main>
+  <script>
+    window.__LAYLA_BOOT_STAGE = 'HTML loaded; waiting for main module';
+    (() => {
+      const panel = document.createElement('div');
+      panel.id = 'layla-debug';
+      panel.style.cssText = 'display:none;position:fixed;z-index:99999;top:12px;left:12px;right:12px;max-height:45vh;overflow:auto;background:#180e13;color:#ffd7d7;border:1px solid #ff6b6b;border-radius:12px;padding:12px;font:12px/1.5 monospace;direction:ltr;white-space:pre-wrap;word-break:break-word';
+      document.body.appendChild(panel);
+      const show = (msg) => { panel.style.display='block'; panel.textContent='LAYLA DEBUG\nStage: '+(window.__LAYLA_BOOT_STAGE||'unknown')+'\n\n'+String(msg); };
+      window.addEventListener('error', e => {
+        const msg = e.error && e.error.stack ? e.error.stack : (e.message || 'Resource loading error: '+(e.target?.src || e.target?.href || 'unknown'));
+        show(msg);
+      }, true);
+      window.addEventListener('unhandledrejection', e => show(e.reason?.stack || e.reason || 'Unhandled promise rejection'));
+      setTimeout(() => {
+        const loading = document.getElementById('loading');
+        if (loading && !loading.classList.contains('done')) show('Boot timed out after 12 seconds. The app did not finish initialization.');
+      }, 12000);
+    })();
+  </script>
   <script type="module" src="./src/main.js"></script>
 </body>
 </html>
