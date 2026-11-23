@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 
 const material=(color,roughness=.95)=>new THREE.MeshStandardMaterial({color,roughness});
-const dark=material(0x302b27);
+const dark=material(0x302b27),trim=material(0xd2b176,.38,.35);
 const groundMat=material(0x596c50),grassMats=[material(0x71805a),material(0x84906a),material(0x4c654d)],bark=material(0x594638),leafMats=[material(0x405d4b),material(0x526d50),material(0x6d7952)],stone=material(0x77796d),stoneLight=material(0x999482),wood=material(0x72543c),roof=material(0x493d38),warm=material(0xe9bd78);
 const mesh=(g,m,p,pos,scale,rotY=0)=>{const o=new THREE.Mesh(g,m);o.position.set(...pos);o.scale.set(...scale);o.rotation.y=rotY;o.castShadow=true;o.receiveShadow=true;p.add(o);return o;};
 
