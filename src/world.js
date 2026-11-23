@@ -122,5 +122,5 @@ export function createWorld(){
  }
  const pollenGeo=new THREE.BufferGeometry(),count=120,arr=new Float32Array(count*3);for(let i=0;i<count;i++){arr[i*3]=(Math.random()-.5)*36;arr[i*3+1]=Math.random()*5+.5;arr[i*3+2]=(Math.random()-.5)*36;}pollenGeo.setAttribute('position',new THREE.BufferAttribute(arr,3));
  const pollen=new THREE.Points(pollenGeo,new THREE.PointsMaterial({color:0xffe6b4,size:.045,transparent:true,opacity:.48,depthWrite:false}));scene.add(pollen);
- return {scene,lanterns,pollen,obstacles};
+ return {scene,lanterns,pollen,obstacles,groundHeight:H};
 }
