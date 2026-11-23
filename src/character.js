@@ -19,7 +19,7 @@ export function createLayla(){
  for(let i=0;i<12;i++){const a=i*Math.PI*2/12;part(new THREE.ConeGeometry(.065,.58,8),clothHi,body,[Math.sin(a)*.29,.49,Math.cos(a)*.24],[.55,1,.65],[0,a,0]);}
  // collar and neck
  part(new THREE.CylinderGeometry(.075,.09,.18,20),skin,body,[0,1.43,0],[1,1,1]);
- part(new THREE.TorusGeometry(.092,.018,8,24),trim,body,[0,1.38,0]);
+ part(new THREE.TorusGeometry(.092,.018,8,24),trim,body,[0,1.38,0],[1,1,1]);
  window.__LAYLA_BOOT_STAGE='Character: head setup';
  const head=new THREE.Group();head.position.set(0,1.72,0);body.add(head);
  ell(skin,head,[0,0,0],[.255,.33,.225]);
@@ -61,7 +61,7 @@ export function createLayla(){
   part(new THREE.CapsuleGeometry(.075,.28,8,12),cloth,arm,[s*.035,-.18,0],[1,1,1],[0,0,-s*.2]);
   const elbow=new THREE.Group();elbow.position.set(s*.06,-.34,.015);arm.add(elbow);
   part(new THREE.CapsuleGeometry(.052,.26,8,12),skin,elbow,[0,-.14,.015],[1,1,1],[0,0,s*.1]);
-  part(new THREE.TorusGeometry(.054,.009,8,20),trim,elbow,[0,-.025,.015]);
+  part(new THREE.TorusGeometry(.054,.009,8,20),trim,elbow,[0,-.025,.015],[1,1,1]);
   ell(skin,elbow,[0,-.29,.025],[.055,.07,.045]);
   for(let f=0;f<4;f++)part(new THREE.CapsuleGeometry(.012,.05,4,6),skin,elbow,[(f-1.5)*.022,-.34,.04],[1,1,1]);
   const hip=new THREE.Group();hip.position.set(s*.12,.48,0);body.add(hip);legs.push(hip);
