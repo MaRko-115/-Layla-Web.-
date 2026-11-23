@@ -98,6 +98,8 @@ export function createWorld(){
  const water=new THREE.Mesh(new THREE.CircleGeometry(4.7,64),M.water);water.rotation.x=-Math.PI/2;water.position.set(wx,wy,wz);water.receiveShadow=true;scene.add(water);
  for(let i=0;i<32;i++){const a=i/32*Math.PI*2,x=wx+Math.cos(a)*5.1,z=wz+Math.sin(a)*5.1;mesh(new THREE.DodecahedronGeometry(.35,0),M.stone2,scene,x,onGround(x,z,.16),z,1,.65,1,a);}
  makeCabin(scene);
+ // Solid interaction boundaries keep the player out of the cabin shell and pond.
+ obstacles.push({x:-10,z:-20,r:4.9},{x:wx,z:wz,r:5.15});
  // clearing: stone edging, two benches, raised beds, low shrubs
  for(let i=0;i<14;i++){const a=i/14*Math.PI*2,x=Math.cos(a)*4.6,z=4+Math.sin(a)*3.4;mesh(new THREE.DodecahedronGeometry(.28,0),M.stone2,scene,x,onGround(x,z,.17),z,1,.7,1,a);}
  for(const [x,z,rot] of [[-4,3,.35],[4,4,-.4]]){
