@@ -36,7 +36,30 @@ export function createWorld(){
  mesh(new THREE.BoxGeometry(1.05,1.8,.12),dark,cabin,[0,.9,2.06],[1,1,1]);
  mesh(new THREE.CircleGeometry(.16,16),warm,cabin,[0,2.15,2.08],[1,1,1]); 
  for(const x of [-1.65,1.65])mesh(new THREE.CylinderGeometry(.08,.08,2.8,8),bark,cabin,[x,1.4,2.35],[1,1,1]);
- // stepping stones around the clearing
+  // close-range environment dressing around spawn: stone ring, bench, planted beds, small shrubs
+ const focus=new THREE.Group();focus.name='SpawnGarden';scene.add(focus);
+ // low stone seating arc
+ for(let i=0;i<9;i++){const a=Math.PI*.12+i*Math.PI*.76/8;const x=Math.cos(a)*3.6,z=5.4+Math.sin(a)*2.5;mesh(new THREE.BoxGeometry(.78,.34,.42),stoneLight,focus,[x,.18,z],[1,1,1],-a);}
+ // two wooden benches with back rails, placed off the path
+ for(const [x,z,rot] of [[-4,3,.35],[4,4,-.4]]){
+   const b=new THREE.Group();b.position.set(x,0,z);b.rotation.y=rot;focus.add(b);
+   mesh(new THREE.BoxGeometry(1.55,.12,.42),wood,b,[0,.52,0],[1,1,1]);
+   for(const px of [-.58,.58]){mesh(new THREE.BoxGeometry(.12,.5,.12),bark,b,[px,.28,0],[1,1,1]);mesh(new THREE.BoxGeometry(.12,.62,.12),bark,b,[px,.75,-.18],[1,1,1]);}
+   mesh(new THREE.BoxGeometry(1.55,.1,.12),wood,b,[0,.83,-.2],[1,1,1]);
+   for(let slat=0;slat<3;slat++)mesh(new THREE.BoxGeometry(1.5,.035,.035),trim,b,[0,.85+slat*.015,-.24+slat*.06],[1,1,1]);
+ }
+ // raised flower beds with varied foliage and blossoms
+ for(const [x,z] of [[-5,-2],[5,1],[-4,7],[5,8]]){
+   mesh(new THREE.CylinderGeometry(1.1,1.2,.22,18),bark,focus,[x,.1,z],[1,1,1]);
+   for(let i=0;i<14;i++){const a=i*2.4,r=.5+(i%4)*.13,px=x+Math.cos(a)*r,pz=z+Math.sin(a)*r;const stemH=.25+(i%3)*.12;
+     mesh(new THREE.CylinderGeometry(.018,.025,stemH,5),grassMats[i%3],focus,[px,.22+stemH/2,pz],[1,1,1]);
+     mesh(new THREE.SphereGeometry(.12+(i%3)*.02,10,8),i%3?material(0xd8c49a):material(0xb58a82),focus,[px,.22+stemH,pz],[1,.8,1]);
+     for(let q=0;q<3;q++){mesh(new THREE.SphereGeometry(.065,8,6),leafMats[(i+q)%3],focus,[px+Math.cos(q*2.1)*.12,.32+q*.06,pz+Math.sin(q*2.1)*.12],[1,.6,1]);}
+   }
+ }
+ // soft path-side stones in the character's immediate clearing
+ for(let i=0;i<24;i++){const a=i*2.399,r=4.6+(i%4)*.35;const x=Math.cos(a)*r,z=5.2+Math.sin(a)*r*.72,s=.16+(i%3)*.07;mesh(new THREE.DodecahedronGeometry(s,0),i%2?stone:stoneLight,focus,[x,s*.55,z],[1,.65,1.15],a);}
+\n // stepping stones around the clearing
  for(let i=0;i<18;i++){const a=i/18*Math.PI*2;const x=Math.cos(a)*7,z= Math.sin(a)*5;mesh(new THREE.CylinderGeometry(.42,.5,.13,7),stoneLight,scene,[x,.04,z],[1,1,1],a);}
  // lantern posts
  const lanterns=[];
