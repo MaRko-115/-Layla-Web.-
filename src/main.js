@@ -21,7 +21,7 @@ const move={x:0,y:0};let stickPointer=null;
 const camTarget=new THREE.Vector3(),desiredCamera=new THREE.Vector3();
 function resize(){camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);renderer.setPixelRatio(Math.min(devicePixelRatio,1.7));}
 addEventListener('resize',resize);
-function start(){if(started)return;started=true;intro.hidden=true;hud.hidden=false;crosshair.hidden=false;mobile.hidden=innerWidth>800;$('bottom-hint').textContent=innerWidth>800?'W A S D للحركة · اسحب لتدوير الكاميرا · E للتفاعل':'استخدم عصا الحركة واسحب الشاشة لتدوير الكاميرا';}
+function start(){if(started)return;started=true;intro.hidden=true;hud.hidden=false;crosshair.hidden=false;mobile.hidden=innerWidth>800;const phone=innerWidth<=800;$('bottom-hint').textContent=phone?'عصا الحركة يسارًا · اسحب لتدوير الكاميرا':'W A S D للحركة · اسحب لتدوير الكاميرا · E للتفاعل';interaction.querySelector('span').textContent=phone?'':'اضغط E';}
 $('start-button').addEventListener('click',start);
 $('help-button').addEventListener('click',()=>$('help-panel').hidden=!$('help-panel').hidden);
 $('close-help').addEventListener('click',()=>$('help-panel').hidden=true);
@@ -94,7 +94,7 @@ function update(dt,t){
  velocityY-=12*dt;player.position.y+=velocityY*dt;const floorY=groundHeight(player.position.x,player.position.z);if(player.position.y<floorY){player.position.y=floorY;velocityY=0;onGround=true;}
  player.position.x=THREE.MathUtils.clamp(player.position.x,-36,36);player.position.z=THREE.MathUtils.clamp(player.position.z,-38,34);
  updateLayla(dt,t);
- const dist=player.position.distanceTo(layla.position);nearLayla=dist<2.65&&started&&!dialogueOpen;interaction.hidden=!nearLayla||dialogueOpen;
+ const dist=player.position.distanceTo(layla.position);nearLayla=dist<2.65&&started&&!dialogueOpen;interaction.hidden=!nearLayla||dialogueOpen;interaction.querySelector('span').textContent=innerWidth<=800?'':'اضغط E';
  const target=new THREE.Vector3(player.position.x,player.position.y+1.35,player.position.z);camTarget.lerp(target,1-Math.exp(-12*dt));
  const radius=6.4,cp=Math.cos(pitch),sp=Math.sin(pitch);desiredCamera.set(camTarget.x+Math.sin(yaw)*radius*cp,camTarget.y+2.1+sp*radius,camTarget.z+Math.cos(yaw)*radius*cp);camera.position.lerp(desiredCamera,1-Math.exp(-10*dt));camera.lookAt(camTarget);
  pollen.rotation.y=t*.012;updateFauna?.(dt,t);worldAssets.update(dt,t);lanterns.forEach((l,i)=>{l.intensity=1.15+Math.sin(t*2+i)*.13;});
