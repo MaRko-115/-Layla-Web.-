@@ -4,11 +4,14 @@ import {createLayla} from './character.js';
 
 const $=id=>document.getElementById(id);
 const canvas=$('world'),loading=$('loading'),intro=$('intro'),hud=$('hud'),crosshair=$('crosshair'),mobile=$('mobile-controls'),interaction=$('interaction'),dialogue=$('dialogue');
+window.__LAYLA_BOOT_STAGE='Three.js module imported; creating WebGL renderer';
 const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:false,powerPreference:'high-performance'});
 renderer.setPixelRatio(Math.min(devicePixelRatio,1.7));renderer.setSize(innerWidth,innerHeight);renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.08;
+window.__LAYLA_BOOT_STAGE='WebGL renderer created; generating world';
 const {scene,lanterns,pollen}=createWorld();
 const camera=new THREE.PerspectiveCamera(48,innerWidth/innerHeight,.1,180);camera.position.set(0,4.2,10);
 const player=new THREE.Group();scene.add(player);player.position.set(0,0,5.5);
+window.__LAYLA_BOOT_STAGE='World generated; creating character';
 const layla=createLayla();layla.position.set(-1.1,0,-3.5);layla.rotation.y=.25;scene.add(layla);
 const groundRay=new THREE.Raycaster(),down=new THREE.Vector3(0,-1,0);
 const keys=new Set();let started=false,dialogueOpen=false,nearLayla=false,yaw=0,pitch=.2,dragging=false,lastX=0,lastY=0,velocityY=0,onGround=true,walkTime=0;
@@ -47,8 +50,10 @@ function update(dt,t){
  const radius=7.5,cp=Math.cos(pitch),sp=Math.sin(pitch);desiredCamera.set(camTarget.x+Math.sin(yaw)*radius*cp,camTarget.y+2.1+sp*radius,camTarget.z+Math.cos(yaw)*radius*cp);camera.position.lerp(desiredCamera,1-Math.exp(-5*dt));camera.lookAt(camTarget);
  pollen.rotation.y=t*.012;lanterns.forEach((l,i)=>{l.intensity=1.15+Math.sin(t*2+i)*.13;});
 }
+window.__LAYLA_BOOT_STAGE='Character created; starting animation loop';
 let prev=performance.now();function frame(now){requestAnimationFrame(frame);const dt=Math.min((now-prev)/1000,.04);prev=now;update(dt,now/1000);renderer.render(scene,camera);}
 requestAnimationFrame(frame);
+window.__LAYLA_BOOT_STAGE='Animation loop started; scene rendering';
 setTimeout(()=>loading.classList.add('done'),650);
 setTimeout(()=>loading.remove(),1450);
 $('location-name').textContent='بداية الوادي';
