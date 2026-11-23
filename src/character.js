@@ -74,6 +74,23 @@ export function createLayla(){
  part(new THREE.TorusGeometry(.24,.012,8,40),trim,body,[0,.72,0],[1,.8,1]);
  part(new THREE.ConeGeometry(.024,.055,8),trim,body,[0,1.2,.2],[1,1,1]);
  root.userData.rig={body,head,arms,legs};
+ let blink=0,nextBlink=2.4,gesture=0;
+ root.userData.animate=(dt,time,state='idle',facing=0)=>{
+   blink=Math.max(0,blink-dt);nextBlink-=dt;if(nextBlink<=0){blink=.13;nextBlink=2.1+Math.random()*3.2;}
+   const bob=state==='walk'?Math.abs(Math.sin(time*7))*.045:Math.sin(time*1.6)*.012;
+   body.position.y=bob;
+   head.rotation.y=THREE.MathUtils.damp(head.rotation.y,facing,.8,dt);
+   head.rotation.x=THREE.MathUtils.damp(head.rotation.x,state==='inspect'?.12:Math.sin(time*1.1)*.018,3,dt);
+   legs.forEach((leg,i)=>{const phase=time*7+i*Math.PI;leg.rotation.x=state==='walk'?Math.sin(phase)*.55:THREE.MathUtils.damp(leg.rotation.x,0,8,dt);});
+   arms.forEach((arm,i)=>{
+     let target=state==='walk'?Math.sin(time*7+i*Math.PI+Math.PI)*.3:Math.sin(time*1.3+i)*.035;
+     if(state==='wave')target=(i===0?-.9:.2)+Math.sin(time*9)*.24;
+     if(state==='inspect')target=i===0?-.82:.08;
+     if(state==='greet')target=i===0?-.58:.25;
+     arm.rotation.x=THREE.MathUtils.damp(arm.rotation.x,target,7,dt);
+     arm.rotation.z=THREE.MathUtils.damp(arm.rotation.z,state==='inspect'?(i===0?-.28:.1):state==='wave'?(i===0?-.25:0):0,6,dt);
+   });
+ };
  root.scale.setScalar(1.12);
  window.__LAYLA_BOOT_STAGE='Character: finished';
  return root;
