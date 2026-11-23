@@ -77,13 +77,13 @@ export function createLayla(){
  let blink=0,nextBlink=2.4,gesture=0;
  root.userData.animate=(dt,time,state='idle',facing=0)=>{
    blink=Math.max(0,blink-dt);nextBlink-=dt;if(nextBlink<=0){blink=.13;nextBlink=2.1+Math.random()*3.2;}
-   const bob=state==='walk'?Math.abs(Math.sin(time*7))*.045:Math.sin(time*1.6)*.012;
-   body.position.y=bob;
+   const bob=state==='walk'?Math.abs(Math.sin(time*7))*.045:state==='sit'?-.12:Math.sin(time*1.6)*.012;
+   body.position.y=THREE.MathUtils.damp(body.position.y,bob,8,dt);
    head.rotation.y=THREE.MathUtils.damp(head.rotation.y,facing,.8,dt);
    head.rotation.x=THREE.MathUtils.damp(head.rotation.x,state==='inspect'?.12:Math.sin(time*1.1)*.018,3,dt);
-   legs.forEach((leg,i)=>{const phase=time*7+i*Math.PI;leg.rotation.x=state==='walk'?Math.sin(phase)*.55:THREE.MathUtils.damp(leg.rotation.x,0,8,dt);});
+   legs.forEach((leg,i)=>{const phase=time*7+i*Math.PI;leg.rotation.x=state==='walk'?Math.sin(phase)*.55:state==='sit'?THREE.MathUtils.damp(leg.rotation.x,-1.05,7,dt):THREE.MathUtils.damp(leg.rotation.x,0,8,dt);});
    arms.forEach((arm,i)=>{
-     let target=state==='walk'?Math.sin(time*7+i*Math.PI+Math.PI)*.3:Math.sin(time*1.3+i)*.035;
+     let target=state==='walk'?Math.sin(time*7+i*Math.PI+Math.PI)*.3:state==='sit'?(i===0?-.18:.18):Math.sin(time*1.3+i)*.035;
      if(state==='wave')target=(i===0?-.9:.2)+Math.sin(time*9)*.24;
      if(state==='inspect')target=i===0?-.82:.08;
      if(state==='greet')target=i===0?-.58:.25;
