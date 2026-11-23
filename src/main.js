@@ -8,11 +8,11 @@ window.__LAYLA_BOOT_STAGE='Three.js module imported; creating WebGL renderer';
 const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:false,powerPreference:'high-performance'});
 renderer.setPixelRatio(Math.min(devicePixelRatio,1.7));renderer.setSize(innerWidth,innerHeight);renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.08;
 window.__LAYLA_BOOT_STAGE='WebGL renderer created; generating world';
-const {scene,lanterns,pollen,obstacles}=createWorld();
+const {scene,lanterns,pollen,obstacles,groundHeight}=createWorld();
 const camera=new THREE.PerspectiveCamera(48,innerWidth/innerHeight,.1,180);camera.position.set(0,4.2,10);
 const player=new THREE.Group();scene.add(player);player.position.set(0,0,7.2);
 window.__LAYLA_BOOT_STAGE='World generated; creating character';
-const layla=createLayla();layla.position.set(-1.25,0,-2.7);layla.rotation.y=.25;scene.add(layla);
+const layla=createLayla();layla.position.set(-1.25,groundHeight(-1.25,-2.7),-2.7);layla.rotation.y=.25;scene.add(layla);
 const groundRay=new THREE.Raycaster(),down=new THREE.Vector3(0,-1,0);
 const keys=new Set();let started=false,dialogueOpen=false,nearLayla=false,yaw=0,pitch=.2,dragging=false,lastX=0,lastY=0,velocityY=0,onGround=true,walkTime=0;
 const move={x:0,y:0};let stickPointer=null;
@@ -82,14 +82,14 @@ function updateLayla(dt,t){
    layla.rotation.y=THREE.MathUtils.damp(layla.rotation.y,Math.atan2(vx,vz),5,dt);
  }
  if(dialogueOpen)state='idle';
- layla.userData.animate?.(dt,t,state,face);
+ layla.position.y=groundHeight(layla.position.x,layla.position.z);layla.userData.animate?.(dt,t,state,face);
 }
 function update(dt,t){
  const forward=(keys.has('KeyW')||keys.has('ArrowUp')?1:0)-(keys.has('KeyS')||keys.has('ArrowDown')?1:0)+move.y;
  const side=(keys.has('KeyD')||keys.has('ArrowRight')?1:0)-(keys.has('KeyA')||keys.has('ArrowLeft')?1:0)+move.x;
  const inputLen=Math.hypot(forward,side),moving=inputLen>.08&&!dialogueOpen;
  if(moving){const f=Math.min(1,inputLen),dx=(Math.sin(yaw)*forward+Math.cos(yaw)*side)/Math.max(1,inputLen),dz=(-Math.cos(yaw)*forward+Math.sin(yaw)*side)/Math.max(1,inputLen);const nx=player.position.x+dx*4.2*dt*f,nz=player.position.z+dz*4.2*dt*f;let blocked=false;for(const o of obstacles){const ox=nx-o.x,oz=nz-o.z;if(ox*ox+oz*oz<(o.r+.38)*(o.r+.38)){blocked=true;break;}}if(!blocked){player.position.x=nx;player.position.z=nz;}player.rotation.y=Math.atan2(dx,dz);walkTime+=dt*10;}
- velocityY-=12*dt;player.position.y+=velocityY*dt;if(player.position.y<0){player.position.y=0;velocityY=0;onGround=true;}
+ velocityY-=12*dt;player.position.y+=velocityY*dt;const floorY=groundHeight(player.position.x,player.position.z);if(player.position.y<floorY){player.position.y=floorY;velocityY=0;onGround=true;}
  player.position.x=THREE.MathUtils.clamp(player.position.x,-36,36);player.position.z=THREE.MathUtils.clamp(player.position.z,-38,34);
  updateLayla(dt,t);
  const dist=player.position.distanceTo(layla.position);nearLayla=dist<2.65&&started&&!dialogueOpen;interaction.hidden=!nearLayla||dialogueOpen;
