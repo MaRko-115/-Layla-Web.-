@@ -5,9 +5,11 @@ const part=(g,m,p,pos,scale,rot=[0,0,0])=>{const o=new THREE.Mesh(g,m);o.positio
 const ell=(m,p,pos,scale)=>part(new THREE.SphereGeometry(1,32,24),m,p,pos,scale);
 
 export function createLayla(){
+ window.__LAYLA_BOOT_STAGE='Character: function entered';
  const root=new THREE.Group();root.name='Layla';
  const skin=M(0xd7a17e),skinHi=M(0xe8bd9b),skinShade=M(0xb87d61),hair=M(0x201923,.48),hair2=M(0x34232b,.5),hairGlow=M(0x50333c,.55),dress=M(0x263e4b),cloth=M(0x38596a),clothHi=M(0x557486),trim=M(0xd2b176,.38,.35),dark=M(0x191c25),eyeWhite=M(0xf3e8dd),iris=M(0x547c78,.32),pupil=M(0x17272a,.2),lip=M(0x9e5e60),blush=M(0xc78376);
  const body=new THREE.Group();root.add(body);
+ window.__LAYLA_BOOT_STAGE='Character: body and dress';
  // layered dress silhouette, fitted bodice and flowing skirt
  part(new THREE.CylinderGeometry(.19,.34,.52,32,1,true),dress,body,[0,.98,0],[1,1,.8]);
  part(new THREE.CylinderGeometry(.22,.48,.66,40,2,true),cloth,body,[0,.48,0],[1,1,.78]);
@@ -18,6 +20,7 @@ export function createLayla(){
  // collar and neck
  part(new THREE.CylinderGeometry(.075,.09,.18,20),skin,body,[0,1.43,0],[1,1,1]);
  part(new THREE.TorusGeometry(.092,.018,8,24),trim,body,[0,1.38,0]);
+ window.__LAYLA_BOOT_STAGE='Character: head setup';
  const head=new THREE.Group();head.position.set(0,1.72,0);body.add(head);
  ell(skin,head,[0,0,0],[.255,.33,.225]);
  // cheek shading and highlights
@@ -39,6 +42,7 @@ export function createLayla(){
  ell(lip,head,[0,-.16,.203],[.027,.008,.008]);
  // ears
  for(const s of [-1,1]){ell(skin,head,[s*.247,-.015,0],[.045,.075,.045]);ell(skinShade,head,[s*.257,-.015,.022],[.018,.035,.012]);}
+ window.__LAYLA_BOOT_STAGE='Character: face completed; hairstyle';
  // hairstyle cap + side curtain, swept fringe, long flowing back hair
  ell(hair,head,[0,.19,-.055],[.28,.22,.25]);
  ell(hair2,head,[0,.12,-.13],[.285,.27,.21]);
@@ -49,6 +53,7 @@ export function createLayla(){
  }
  // tapered bangs, sculpted into three locks
  for(let i=-1;i<=1;i++){const bang=part(new THREE.CapsuleGeometry(.065,.14,6,12),hair2,head,[i*.085,.17,.18],[1.1,1.2,.6],[0,0,-i*.22]);}
+ window.__LAYLA_BOOT_STAGE='Character: hair completed; limbs';
  // shoulders, articulated arms, cuffs, fingers
  const arms=[],legs=[];
  for(const s of [-1,1]){
@@ -64,10 +69,12 @@ export function createLayla(){
   part(new THREE.CapsuleGeometry(.052,.3,8,12),skin,hip,[0,-.43,.012],[1,1,1]);
   part(new THREE.CapsuleGeometry(.065,.12,8,12),dark,hip,[0,-.63,.075],[1,.65,1.5]);
  }
+ window.__LAYLA_BOOT_STAGE='Character: limbs completed; finishing';
  // fine belt, pendant, embroidered hem accents
  part(new THREE.TorusGeometry(.24,.012,8,40),trim,body,[0,.72,0],[1,.8,1]);
  part(new THREE.ConeGeometry(.024,.055,8),trim,body,[0,1.2,.2],[1,1,1]);
  root.userData.rig={body,head,arms,legs};
  root.scale.setScalar(1.12);
+ window.__LAYLA_BOOT_STAGE='Character: finished';
  return root;
 }
