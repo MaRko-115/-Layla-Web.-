@@ -59,7 +59,8 @@ export function createWorld(){
  }
  // soft path-side stones in the character's immediate clearing
  for(let i=0;i<24;i++){const a=i*2.399,r=4.6+(i%4)*.35;const x=Math.cos(a)*r,z=5.2+Math.sin(a)*r*.72,s=.16+(i%3)*.07;mesh(new THREE.DodecahedronGeometry(s,0),i%2?stone:stoneLight,focus,[x,s*.55,z],[1,.65,1.15],a);}
-\n // stepping stones around the clearing
+
+ // stepping stones around the clearing
  for(let i=0;i<18;i++){const a=i/18*Math.PI*2;const x=Math.cos(a)*7,z= Math.sin(a)*5;mesh(new THREE.CylinderGeometry(.42,.5,.13,7),stoneLight,scene,[x,.04,z],[1,1,1],a);}
  // lantern posts
  const lanterns=[];
