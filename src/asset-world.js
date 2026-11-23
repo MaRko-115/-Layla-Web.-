@@ -2,10 +2,15 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/loaders/GLTFLoader.js';
 
 const loader = new GLTFLoader();
+function loadAsset(local, remote, onLoad) {
+  loader.load(local, onLoad, undefined, () => {
+    if (remote) loader.load(remote, onLoad, undefined, error => console.warn('Remote asset unavailable:', remote, error));
+  });
+}
 const animalSpecs = [
-  { id:'corgi', file:'./assets/models/animals/corgi.glb', height:.92, position:[-7,0,1], path:[[-7,1],[-4,0],[-5,3],[-8,2]], speed:.72, clip:'walk' },
-  { id:'duck', file:'./assets/models/animals/duck.glb', height:.58, position:[4,0,-5], path:[[4,-5],[6,-4],[6,-6],[3,-6]], speed:.42, clip:'walk' },
-  { id:'owl', file:'./assets/models/animals/owl.glb', height:.72, position:[7,0,4], path:[[7,4]], speed:0, clip:'idle' }
+  { id:'corgi', file:'./assets/models/animals/corgi.glb', remote:'https://gobkit.com/freebies/animal/Corgi.glb', height:.92, position:[-7,0,1], path:[[-7,1],[-4,0],[-5,3],[-8,2]], speed:.72, clip:'walk' },
+  { id:'duck', file:'./assets/models/animals/duck.glb', remote:'https://gobkit.com/freebies/animal/Duck.glb', height:.58, position:[4,0,-5], path:[[4,-5],[6,-4],[6,-6],[3,-6]], speed:.42, clip:'walk' },
+  { id:'owl', file:'./assets/models/animals/owl.glb', remote:'https://gobkit.com/freebies/animalB/Owl.glb', height:.72, position:[7,0,4], path:[[7,4]], speed:0, clip:'idle' }
 ];
 
 function fitModel(object, targetHeight) {
@@ -21,14 +26,14 @@ export function loadWorldAssets(scene, groundHeight) {
   const actors = [];
   const mixers = [];
   const props = [
-    {file:'./assets/models/environment/bush.glb', positions:[[-10,0,-5],[10,0,7],[1,0,12]] , height:1.35},
-    {file:'./assets/models/environment/cliff.glb', positions:[[-15,0,-13],[14,0,-15]], height:5.5},
-    {file:'./assets/models/environment/grass.glb', positions:[[-5,0,8],[7,0,10],[-11,0,4],[12,0,1],[0,0,-10]], height:.75},
-    {file:'./assets/models/environment/hill.glb', positions:[[-18,0,4],[18,0,0]], height:4.5}
+    {file:'./assets/models/environment/bush.glb', remote:'https://gobkit.com/freebies/environment/Bush001.glb', positions:[[-10,0,-5],[10,0,7],[1,0,12]] , height:1.35},
+    {file:'./assets/models/environment/cliff.glb', remote:'https://gobkit.com/freebies/environment/Cliff001.glb', positions:[[-15,0,-13],[14,0,-15]], height:5.5},
+    {file:'./assets/models/environment/grass.glb', remote:'https://gobkit.com/freebies/environment/Grass001.glb', positions:[[-5,0,8],[7,0,10],[-11,0,4],[12,0,1],[0,0,-10]], height:.75},
+    {file:'./assets/models/environment/hill.glb', remote:'https://gobkit.com/freebies/environment/Hill001.glb', positions:[[-18,0,4],[18,0,0]], height:4.5}
   ];
 
   for (const spec of animalSpecs) {
-    loader.load(spec.file, gltf => {
+    loadAsset(spec.file, spec.remote, gltf => {
       const actor = new THREE.Group();
       const model = gltf.scene;
       fitModel(model, spec.height);
@@ -53,7 +58,7 @@ export function loadWorldAssets(scene, groundHeight) {
   }
 
   for (const prop of props) {
-    loader.load(prop.file, gltf => {
+    loadAsset(prop.file, prop.remote, gltf => {
       for (const [x,,z] of prop.positions) {
         const model = gltf.scene.clone(true);
         fitModel(model, prop.height);
