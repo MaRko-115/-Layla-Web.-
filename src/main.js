@@ -106,3 +106,40 @@ window.__LAYLA_BOOT_STAGE='Animation loop started; scene rendering';
 setTimeout(()=>loading.classList.add('done'),650);
 setTimeout(()=>loading.remove(),1450);
 $('location-name').textContent='بداية الوادي';
+
+
+// Conversation shell: the browser never talks directly to an AI provider or stores secrets.
+// The same-origin private server must implement POST /api/layla/chat.
+const chatPanel=$('chat-panel'),chatMessages=$('chat-messages'),chatForm=$('chat-form'),chatInput=$('chat-input'),chatSend=$('chat-send'),chatStatus=$('chat-status');
+let chatConversationId='layla-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8);
+function addChatMessage(text,kind='assistant'){
+ const empty=chatMessages.querySelector('.chat-empty');if(empty)empty.remove();
+ const node=document.createElement('div');node.className='chat-message '+kind;node.textContent=text;
+ chatMessages.appendChild(node);chatMessages.scrollTop=chatMessages.scrollHeight;return node;
+}
+function toggleChat(open){
+ chatPanel.hidden=!open;
+ if(open){$('help-panel').hidden=true;chatInput.focus();}
+}
+$('chat-button').addEventListener('click',()=>toggleChat(chatPanel.hidden));
+$('chat-close').addEventListener('click',()=>toggleChat(false));
+chatForm.addEventListener('submit',async event=>{
+ event.preventDefault();
+ const message=chatInput.value.trim();if(!message||chatSend.disabled)return;
+ addChatMessage(message,'user');chatInput.value='';chatSend.disabled=true;chatStatus.textContent='تكتب ليلى...';
+ try{
+  const response=await fetch('/api/layla/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message,conversation_id:chatConversationId,source:'layla-web'})});
+  if(!response.ok)throw new Error('HTTP '+response.status);
+  const data=await response.json();
+  const reply=typeof data.reply==='string'?data.reply:(typeof data.message==='string'?data.message:'');
+  if(!reply)throw new Error('EMPTY_REPLY');
+  addChatMessage(reply,'assistant');chatStatus.textContent='متصلة';
+ }catch(error){
+  addChatMessage('لم يصلني رد من خادم ليلى. واجهة المحادثة جاهزة، لكن خدمة العقل غير متصلة أو أن مسار /api/layla/chat غير مفعّل بعد. لم أختلق ردًا بدلًا منها.','error');
+  chatStatus.textContent='الخادم غير متصل';
+  console.warn('Layla chat endpoint unavailable:',error);
+ }finally{chatSend.disabled=false;chatInput.focus();}
+});
+chatInput.addEventListener('keydown',event=>{
+ if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();chatForm.requestSubmit();}
+});
