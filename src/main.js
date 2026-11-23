@@ -26,8 +26,8 @@ $('close-help').addEventListener('click',()=>$('help-panel').hidden=true);
 $('close-dialogue').addEventListener('click',()=>{dialogue.hidden=true;dialogueOpen=false;});
 let laylaActivity='idle',laylaTarget=0,laylaPause=1.5,laylaClock=0,laylaGreeting=false;
 const laylaRoute=[
- {x:-4,z:3,action:'inspect',pause:3},
- {x:3.5,z:4,action:'idle',pause:2.5},
+ {x:-4,z:3,action:'sit',pause:8},
+ {x:3.5,z:4,action:'sit',pause:7},
  {x:8,z:-1.5,action:'inspect',pause:3},
  {x:5,z:9,action:'inspect',pause:2.5},
  {x:-2,z:1,action:'idle',pause:2}
@@ -66,7 +66,7 @@ function updateLayla(dt,t){
    layla.rotation.y=THREE.MathUtils.damp(layla.rotation.y,Math.atan2(player.position.x-layla.position.x,player.position.z-layla.position.z),3,dt);
    if(!laylaGreeting&&playerDist<3.1)laylaActivity='greet';
  } else if(laylaPause>0){
-   laylaPause-=dt;state=laylaActivity==='inspect'?'inspect':'idle';
+   laylaPause-=dt;state=laylaActivity==='inspect'?'inspect':laylaActivity==='sit'?'sit':'idle';
    if(state==='inspect')face=.45*Math.sin(t*.8);
  } else if(dist<.38){
    laylaActivity=target.action;laylaPause=target.pause;laylaTarget=(laylaTarget+1)%laylaRoute.length;state=target.action;
