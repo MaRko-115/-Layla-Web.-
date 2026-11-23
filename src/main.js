@@ -24,7 +24,26 @@ $('start-button').addEventListener('click',start);
 $('help-button').addEventListener('click',()=>$('help-panel').hidden=!$('help-panel').hidden);
 $('close-help').addEventListener('click',()=>$('help-panel').hidden=true);
 $('close-dialogue').addEventListener('click',()=>{dialogue.hidden=true;dialogueOpen=false;});
-function interact(){if(!started||!nearLayla)return;dialogueOpen=true;dialogue.hidden=false;$('dialogue-text').textContent='أهلاً بك في الوادي. هذا المكان يتغيّر كلما اكتشفنا جزءاً جديداً منه. هل نبدأ جولتنا؟';}
+let laylaActivity='idle',laylaTarget=0,laylaPause=1.5,laylaClock=0,laylaGreeting=false;
+const laylaRoute=[
+ {x:-4,z:3,action:'inspect',pause:3},
+ {x:3.5,z:4,action:'idle',pause:2.5},
+ {x:8,z:-1.5,action:'inspect',pause:3},
+ {x:5,z:9,action:'inspect',pause:2.5},
+ {x:-2,z:1,action:'idle',pause:2}
+];
+function interact(){
+ if(!started||!nearLayla)return;
+ dialogueOpen=true;dialogue.hidden=false;
+ const lines={
+   inspect:'كنت أتفقد المكان… انظر إلى هذه التفاصيل الصغيرة، الوادي مليء بأشياء قد لا تلاحظها من أول مرة.',
+   walk:'كنت في جولة قصيرة. أحب أن أتمشى وأكتشف ما يتغير حولي.',
+   greet:'أهلاً بك! كنت أريد أن أريك هذا المكان. هل لاحظت الطريق والحوض؟',
+   idle:'جميل أنك هنا. خذ وقتك، لا داعي للاستعجال… يمكننا استكشاف الوادي معاً.'
+ };
+ $('dialogue-text').textContent=laylaGreeting?'أهلاً بعودتك. هل نكمل جولتنا؟':(lines[laylaActivity]||lines.idle);
+ laylaGreeting=true;
+}
 addEventListener('keydown',e=>{keys.add(e.code);if(['Space','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.code))e.preventDefault();if(e.code==='KeyE')interact();if(e.code==='Space'&&onGround&&started){velocityY=5.4;onGround=false;}});
 addEventListener('keyup',e=>keys.delete(e.code));
 canvas.addEventListener('pointerdown',e=>{if(!started)return;dragging=true;lastX=e.clientX;lastY=e.clientY;canvas.setPointerCapture?.(e.pointerId);});
@@ -37,6 +56,34 @@ stick.addEventListener('pointermove',e=>{if(e.pointerId===stickPointer)updateSti
 function updateStick(e){const r=stick.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2;let dx=e.clientX-cx,dy=e.clientY-cy;const len=Math.hypot(dx,dy),max=34;if(len>max){dx=dx/len*max;dy=dy/len*max;}move.x=dx/max;move.y=-dy/max;knob.style.transform=`translate(${dx}px,${dy}px)`;}
 function releaseStick(e){if(e.pointerId!==stickPointer)return;stickPointer=null;move.x=move.y=0;knob.style.transform='translate(0,0)';}
 stick.addEventListener('pointerup',releaseStick);stick.addEventListener('pointercancel',releaseStick);
+function updateLayla(dt,t){
+ const target=laylaRoute[laylaTarget],dx=target.x-layla.position.x,dz=target.z-layla.position.z,dist=Math.hypot(dx,dz);
+ const playerDist=Math.hypot(player.position.x-layla.position.x,player.position.z-layla.position.z);
+ let state='idle',face=0;
+ if(playerDist<4.2&&started&&!dialogueOpen){
+   state=playerDist<2.7?'greet':'idle';
+   face=Math.atan2(player.position.x-layla.position.x,player.position.z-layla.position.z)-layla.rotation.y;
+   layla.rotation.y=THREE.MathUtils.damp(layla.rotation.y,Math.atan2(player.position.x-layla.position.x,player.position.z-layla.position.z),3,dt);
+   if(!laylaGreeting&&playerDist<3.1)laylaActivity='greet';
+ } else if(laylaPause>0){
+   laylaPause-=dt;state=laylaActivity==='inspect'?'inspect':'idle';
+   if(state==='inspect')face=.45*Math.sin(t*.8);
+ } else if(dist<.38){
+   laylaActivity=target.action;laylaPause=target.pause;laylaTarget=(laylaTarget+1)%laylaRoute.length;state=target.action;
+ } else {
+   state='walk';
+   let vx=dx/Math.max(dist,.001),vz=dz/Math.max(dist,.001);
+   // Soft steering around trees, pond and cabin; never push the character through an obstacle.
+   for(const o of obstacles){const ox=layla.position.x-o.x,oz=layla.position.z-o.z,d=Math.hypot(ox,oz),safe=o.r+.62;if(d<safe+1.25&&d>.001){const force=(safe+1.25-d)/(safe+1.25);vx+=ox/d*force*1.8;vz+=oz/d*force*1.8;}}
+   const len=Math.hypot(vx,vz)||1;vx/=len;vz/=len;
+   const nx=layla.position.x+vx*1.15*dt,nz=layla.position.z+vz*1.15*dt;
+   let clear=true;for(const o of obstacles){if(Math.hypot(nx-o.x,nz-o.z)<o.r+.5){clear=false;break;}}
+   if(clear){layla.position.x=nx;layla.position.z=nz;}
+   layla.rotation.y=THREE.MathUtils.damp(layla.rotation.y,Math.atan2(vx,vz),5,dt);
+ }
+ if(dialogueOpen)state='idle';
+ layla.userData.animate?.(dt,t,state,face);
+}
 function update(dt,t){
  const forward=(keys.has('KeyW')||keys.has('ArrowUp')?1:0)-(keys.has('KeyS')||keys.has('ArrowDown')?1:0)+move.y;
  const side=(keys.has('KeyD')||keys.has('ArrowRight')?1:0)-(keys.has('KeyA')||keys.has('ArrowLeft')?1:0)+move.x;
@@ -44,7 +91,7 @@ function update(dt,t){
  if(moving){const f=Math.min(1,inputLen),dx=(Math.sin(yaw)*forward+Math.cos(yaw)*side)/Math.max(1,inputLen),dz=(-Math.cos(yaw)*forward+Math.sin(yaw)*side)/Math.max(1,inputLen);const nx=player.position.x+dx*4.2*dt*f,nz=player.position.z+dz*4.2*dt*f;let blocked=false;for(const o of obstacles){const ox=nx-o.x,oz=nz-o.z;if(ox*ox+oz*oz<(o.r+.38)*(o.r+.38)){blocked=true;break;}}if(!blocked){player.position.x=nx;player.position.z=nz;}player.rotation.y=Math.atan2(dx,dz);walkTime+=dt*10;}
  velocityY-=12*dt;player.position.y+=velocityY*dt;if(player.position.y<0){player.position.y=0;velocityY=0;onGround=true;}
  player.position.x=THREE.MathUtils.clamp(player.position.x,-36,36);player.position.z=THREE.MathUtils.clamp(player.position.z,-38,34);
- const rig=layla.userData.rig;rig.legs.forEach((leg,i)=>{leg.rotation.x=moving?Math.sin(walkTime+i*Math.PI)*.48:0;});rig.arms.forEach((arm,i)=>{arm.rotation.x=moving?Math.sin(walkTime+i*Math.PI+Math.PI)*.22:0;});rig.body.position.y=moving?Math.abs(Math.sin(walkTime*2))*.035:0;
+ updateLayla(dt,t);
  const dist=player.position.distanceTo(layla.position);nearLayla=dist<2.65&&started&&!dialogueOpen;interaction.hidden=!nearLayla||dialogueOpen;
  const target=new THREE.Vector3(player.position.x,player.position.y+1.35,player.position.z);camTarget.lerp(target,1-Math.exp(-6*dt));
  const radius=7.5,cp=Math.cos(pitch),sp=Math.sin(pitch);desiredCamera.set(camTarget.x+Math.sin(yaw)*radius*cp,camTarget.y+2.1+sp*radius,camTarget.z+Math.cos(yaw)*radius*cp);camera.position.lerp(desiredCamera,1-Math.exp(-5*dt));camera.lookAt(camTarget);
