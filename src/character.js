@@ -7,7 +7,7 @@ const ell=(m,p,pos,scale)=>part(new THREE.SphereGeometry(1,32,24),m,p,pos,scale)
 export function createLayla(){
  window.__LAYLA_BOOT_STAGE='Character: function entered';
  const root=new THREE.Group();root.name='Layla';
- const skin=M(0xd7a17e),skinHi=M(0xe8bd9b),skinShade=M(0xb87d61),hair=M(0x201923,.48),hair2=M(0x34232b,.5),hairGlow=M(0x50333c,.55),dress=M(0x263e4b),cloth=M(0x38596a),clothHi=M(0x557486),trim=M(0xd2b176,.38,.35),dark=M(0x191c25),eyeWhite=M(0xf3e8dd),iris=M(0x547c78,.32),pupil=M(0x17272a,.2),lip=M(0x9e5e60),blush=M(0xc78376);
+ const skin=M(0xd7a17e),skinHi=M(0xe8bd9b),skinShade=M(0xb87d61),hair=M(0xB94A2F,.48),hair2=M(0x8E3025,.5),hairGlow=M(0xD16A3D,.55),dress=M(0x263e4b),cloth=M(0x38596a),clothHi=M(0x557486),trim=M(0xd2b176,.38,.35),dark=M(0x191c25),eyeWhite=M(0xf3e8dd),iris=M(0x547c78,.32),pupil=M(0x17272a,.2),lip=M(0x9e5e60),blush=M(0xc78376);
  const body=new THREE.Group();root.add(body);
  window.__LAYLA_BOOT_STAGE='Character: body and dress';
  // layered dress silhouette, fitted bodice and flowing skirt
@@ -43,7 +43,7 @@ export function createLayla(){
  // ears
  for(const s of [-1,1]){ell(skin,head,[s*.247,-.015,0],[.045,.075,.045]);ell(skinShade,head,[s*.257,-.015,.022],[.018,.035,.012]);}
  window.__LAYLA_BOOT_STAGE='Character: face completed; hairstyle';
- // hairstyle cap + side curtain, swept fringe, long flowing back hair
+ // Long layered copper-red hairstyle: warm base, deep auburn shadows and bright copper strands
  ell(hair,head,[0,.19,-.055],[.28,.22,.25]);
  ell(hair2,head,[0,.12,-.13],[.285,.27,.21]);
  const back=part(new THREE.CapsuleGeometry(.25,.5,8,18),hair,head,[0,-.22,-.14],[1.08,1.25,.72]);back.rotation.x=-.16;
