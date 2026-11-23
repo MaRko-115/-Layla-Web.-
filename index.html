@@ -17,7 +17,7 @@
     <header class="topbar">
       <div class="brand"><span class="brand-mark">L</span><div><strong>LAYLA</strong><small>عالم قابل للاستكشاف</small></div></div>
       <div class="world-label"><span class="live-dot"></span> الوادي الهادئ <span class="separator">•</span> الفصل الأول</div>
-      <button id="help-button" class="icon-button" aria-label="التعليمات">؟</button>
+      <div class="topbar-actions"><button id="chat-button" class="chat-open-button" aria-label="افتح محادثة ليلى">تحدث مع ليلى</button><button id="help-button" class="icon-button" aria-label="التعليمات">؟</button></div>
     </header>
     <section class="intro" id="intro">
       <p class="eyebrow">A NEW WORLD BEGINS</p>
@@ -32,6 +32,12 @@
     </aside>
     <div class="crosshair" id="crosshair" hidden></div>
     <div class="interaction" id="interaction" hidden><span>اضغط E</span> للتفاعل</div>
+    <section class="chat-panel" id="chat-panel" aria-label="محادثة ليلى" hidden>
+      <header class="chat-header"><div><strong>ليلى</strong><small id="chat-status">المحادثة</small></div><button id="chat-close" aria-label="إغلاق المحادثة">×</button></header>
+      <div class="chat-messages" id="chat-messages" aria-live="polite"><div class="chat-empty">اكتب لليلى ما تريد قوله. ستظهر ردودها هنا عند اتصال خادم المحادثة.</div></div>
+      <form class="chat-composer" id="chat-form"><textarea id="chat-input" rows="1" maxlength="2000" placeholder="اكتب رسالة لليلى..." aria-label="رسالتك إلى ليلى"></textarea><button id="chat-send" type="submit">إرسال</button></form>
+      <p class="chat-footnote">تحتاج الردود الذكية إلى تشغيل خادم ليلى الخاص.</p>
+    </section>
     <section class="dialogue" id="dialogue" hidden>
       <div class="dialogue-avatar">L</div>
       <div><span class="dialogue-name">ليلى</span><p id="dialogue-text">أهلاً بك. كنت أنتظرك.</p></div>
