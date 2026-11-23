@@ -122,5 +122,44 @@ export function createWorld(){
  }
  const pollenGeo=new THREE.BufferGeometry(),count=120,arr=new Float32Array(count*3);for(let i=0;i<count;i++){arr[i*3]=(Math.random()-.5)*36;arr[i*3+1]=Math.random()*5+.5;arr[i*3+2]=(Math.random()-.5)*36;}pollenGeo.setAttribute('position',new THREE.BufferAttribute(arr,3));
  const pollen=new THREE.Points(pollenGeo,new THREE.PointsMaterial({color:0xffe6b4,size:.045,transparent:true,opacity:.48,depthWrite:false}));scene.add(pollen);
- return {scene,lanterns,pollen,obstacles,groundHeight:H};
+ // Wildlife: small autonomous rabbits and circling birds. They are world creatures,
+ // not decorative static props; their motion is updated every frame.
+ const fauna=[];
+ const rabbitM=mat(0x9a806b),rabbitLight=mat(0xcbb39a),rabbitDark=mat(0x4c3b35),rabbitEye=mat(0x211b1a);
+ for(const [x,z,phase] of [[-7,6,.4],[7,7,2.2],[-13,-5,4.1]]){
+  const animal=new THREE.Group();animal.position.set(x,onGround(x,z),z);scene.add(animal);
+  mesh(new THREE.SphereGeometry(.25,16,12),rabbitM,animal,0,.28,0,1.25,.88,.9);
+  mesh(new THREE.SphereGeometry(.17,14,12),rabbitLight,animal,0,.38,.19,.95,.9,.9);
+  for(const s of [-1,1]){
+   mesh(new THREE.CapsuleGeometry(.055,.25,5,8),rabbitM,animal,s*.105,.68,-.025,.8,1,1,[0,0,s*.12]);
+   mesh(new THREE.SphereGeometry(.035,10,8),rabbitEye,animal,s*.095,.43,.34);
+   mesh(new THREE.SphereGeometry(.045,10,8),rabbitLight,animal,s*.09,.12,-.12);
+  }
+  fauna.push({type:'rabbit',group:animal,x,z,phase,speed:.48+phase*.025});
+ }
+ const birdM=mat(0x48545a,.7),birdWing=mat(0x6d7775,.7);
+ for(let i=0;i<5;i++){
+  const bird=new THREE.Group();scene.add(bird);
+  mesh(new THREE.SphereGeometry(.105,12,10),birdM,bird,0,0,0,1.25,.72,.72);
+  const left=mesh(new THREE.ConeGeometry(.09,.42,5),birdWing,-bird,-.22,0,0,1,1,1,0);
+  const right=mesh(new THREE.ConeGeometry(.09,.42,5),birdWing,bird,.22,0,0,1,1,1,Math.PI);
+  fauna.push({type:'bird',group:bird,phase:i*1.25,radius:5+i*1.1,wing:[left,right]});
+ }
+ const updateFauna=(dt,time)=>{
+  for(const a of fauna){
+   if(a.type==='rabbit'){
+    const t=time*a.speed+a.phase,hop=Math.max(0,Math.sin(t*2.1))**8*.34;
+    a.group.position.set(a.x+Math.sin(t*.42)*1.2,H(a.x+Math.sin(t*.42)*1.2,a.z+Math.cos(t*.31)*.8)+hop,a.z+Math.cos(t*.31)*.8);
+    a.group.rotation.y=Math.atan2(Math.cos(t*.42),-Math.sin(t*.31));
+    a.group.scale.y=1-hop*.45;
+   }else{
+    const t=time*.18+a.phase;
+    a.group.position.set(Math.cos(t)*a.radius,5.8+Math.sin(t*2+a.phase)*.45,-5+Math.sin(t)*a.radius);
+    a.group.rotation.y=-t;
+    const flap=Math.sin(time*8+a.phase)*.48;
+    a.wing[0].rotation.z=flap;a.wing[1].rotation.z=-flap;
+   }
+  }
+ };
+ return {scene,lanterns,pollen,obstacles,groundHeight:H,fauna,updateFauna};
 }
