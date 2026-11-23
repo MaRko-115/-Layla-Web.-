@@ -141,7 +141,7 @@ export function createWorld(){
  for(let i=0;i<5;i++){
   const bird=new THREE.Group();scene.add(bird);
   mesh(new THREE.SphereGeometry(.105,12,10),birdM,bird,0,0,0,1.25,.72,.72);
-  const left=mesh(new THREE.ConeGeometry(.09,.42,5),birdWing,-bird,-.22,0,0,1,1,1,0);
+  const left=mesh(new THREE.ConeGeometry(.09,.42,5),birdWing,bird,-.22,0,0,1,1,1,0);
   const right=mesh(new THREE.ConeGeometry(.09,.42,5),birdWing,bird,.22,0,0,1,1,1,Math.PI);
   fauna.push({type:'bird',group:bird,phase:i*1.25,radius:5+i*1.1,wing:[left,right]});
  }
