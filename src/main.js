@@ -8,7 +8,7 @@ window.__LAYLA_BOOT_STAGE='Three.js module imported; creating WebGL renderer';
 const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:false,powerPreference:'high-performance'});
 renderer.setPixelRatio(Math.min(devicePixelRatio,1.7));renderer.setSize(innerWidth,innerHeight);renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.08;
 window.__LAYLA_BOOT_STAGE='WebGL renderer created; generating world';
-const {scene,lanterns,pollen,obstacles,groundHeight}=createWorld();
+const {scene,lanterns,pollen,obstacles,groundHeight,updateFauna}=createWorld();
 const camera=new THREE.PerspectiveCamera(48,innerWidth/innerHeight,.1,180);camera.position.set(0,4.2,10);
 const player=new THREE.Group();scene.add(player);player.position.set(0,0,7.2);
 window.__LAYLA_BOOT_STAGE='World generated; creating character';
@@ -95,7 +95,7 @@ function update(dt,t){
  const dist=player.position.distanceTo(layla.position);nearLayla=dist<2.65&&started&&!dialogueOpen;interaction.hidden=!nearLayla||dialogueOpen;
  const target=new THREE.Vector3(player.position.x,player.position.y+1.35,player.position.z);camTarget.lerp(target,1-Math.exp(-6*dt));
  const radius=7.5,cp=Math.cos(pitch),sp=Math.sin(pitch);desiredCamera.set(camTarget.x+Math.sin(yaw)*radius*cp,camTarget.y+2.1+sp*radius,camTarget.z+Math.cos(yaw)*radius*cp);camera.position.lerp(desiredCamera,1-Math.exp(-5*dt));camera.lookAt(camTarget);
- pollen.rotation.y=t*.012;lanterns.forEach((l,i)=>{l.intensity=1.15+Math.sin(t*2+i)*.13;});
+ pollen.rotation.y=t*.012;updateFauna?.(dt,t);lanterns.forEach((l,i)=>{l.intensity=1.15+Math.sin(t*2+i)*.13;});
 }
 window.__LAYLA_BOOT_STAGE='Character created; starting animation loop';
 let prev=performance.now();function frame(now){requestAnimationFrame(frame);const dt=Math.min((now-prev)/1000,.04);prev=now;update(dt,now/1000);renderer.render(scene,camera);}
