@@ -7,7 +7,7 @@ const $=id=>document.getElementById(id);
 const canvas=$('world'),loading=$('loading'),intro=$('intro'),hud=$('hud'),crosshair=$('crosshair'),mobile=$('mobile-controls'),interaction=$('interaction'),dialogue=$('dialogue');
 window.__LAYLA_BOOT_STAGE='Three.js module imported; creating WebGL renderer';
 const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:false,powerPreference:'high-performance'});
-renderer.setPixelRatio(Math.min(devicePixelRatio,1.7));renderer.setSize(innerWidth,innerHeight);renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.08;
+renderer.setPixelRatio(Math.min(devicePixelRatio,innerWidth<800?1.35:1.7));renderer.setSize(innerWidth,innerHeight);renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.08;
 window.__LAYLA_BOOT_STAGE='WebGL renderer created; generating world';
 const {scene,lanterns,pollen,obstacles,groundHeight,updateFauna}=createWorld();
 const worldAssets=loadWorldAssets(scene,groundHeight);
@@ -49,7 +49,7 @@ function interact(){
 addEventListener('keydown',e=>{keys.add(e.code);if(['Space','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.code))e.preventDefault();if(e.code==='KeyE')interact();if(e.code==='Space'&&onGround&&started){velocityY=5.4;onGround=false;}});
 addEventListener('keyup',e=>keys.delete(e.code));
 canvas.addEventListener('pointerdown',e=>{if(!started)return;dragging=true;lastX=e.clientX;lastY=e.clientY;canvas.setPointerCapture?.(e.pointerId);});
-canvas.addEventListener('pointermove',e=>{if(!dragging||!started)return;const dx=e.clientX-lastX,dy=e.clientY-lastY;lastX=e.clientX;lastY=e.clientY;yaw-=dx*.004;pitch=THREE.MathUtils.clamp(pitch+dy*.003,-.08,.62);});
+canvas.addEventListener('pointermove',e=>{if(!dragging||!started)return;const dx=e.clientX-lastX,dy=e.clientY-lastY;lastX=e.clientX;lastY=e.clientY;yaw-=dx*.0052;pitch=THREE.MathUtils.clamp(pitch+dy*.004,-.12,.72);});
 canvas.addEventListener('pointerup',()=>dragging=false);canvas.addEventListener('pointercancel',()=>dragging=false);
 $('mobile-action').addEventListener('click',interact);
 const stick=$('stick'),knob=$('stick-knob');
@@ -90,13 +90,13 @@ function update(dt,t){
  const forward=(keys.has('KeyW')||keys.has('ArrowUp')?1:0)-(keys.has('KeyS')||keys.has('ArrowDown')?1:0)+move.y;
  const side=(keys.has('KeyD')||keys.has('ArrowRight')?1:0)-(keys.has('KeyA')||keys.has('ArrowLeft')?1:0)+move.x;
  const inputLen=Math.hypot(forward,side),moving=inputLen>.08&&!dialogueOpen;
- if(moving){const f=Math.min(1,inputLen),dx=(Math.sin(yaw)*forward+Math.cos(yaw)*side)/Math.max(1,inputLen),dz=(-Math.cos(yaw)*forward+Math.sin(yaw)*side)/Math.max(1,inputLen);const nx=player.position.x+dx*4.2*dt*f,nz=player.position.z+dz*4.2*dt*f;let blocked=false;for(const o of obstacles){const ox=nx-o.x,oz=nz-o.z;if(ox*ox+oz*oz<(o.r+.38)*(o.r+.38)){blocked=true;break;}}if(!blocked){player.position.x=nx;player.position.z=nz;}player.rotation.y=Math.atan2(dx,dz);walkTime+=dt*10;}
+ if(moving){const f=Math.min(1,inputLen),dx=(Math.sin(yaw)*forward+Math.cos(yaw)*side)/Math.max(1,inputLen),dz=(-Math.cos(yaw)*forward+Math.sin(yaw)*side)/Math.max(1,inputLen);const nx=player.position.x+dx*5.2*dt*f,nz=player.position.z+dz*5.2*dt*f;let blocked=false;for(const o of obstacles){const ox=nx-o.x,oz=nz-o.z;if(ox*ox+oz*oz<(o.r+.38)*(o.r+.38)){blocked=true;break;}}if(!blocked){player.position.x=nx;player.position.z=nz;}player.rotation.y=Math.atan2(dx,dz);walkTime+=dt*10;}
  velocityY-=12*dt;player.position.y+=velocityY*dt;const floorY=groundHeight(player.position.x,player.position.z);if(player.position.y<floorY){player.position.y=floorY;velocityY=0;onGround=true;}
  player.position.x=THREE.MathUtils.clamp(player.position.x,-36,36);player.position.z=THREE.MathUtils.clamp(player.position.z,-38,34);
  updateLayla(dt,t);
  const dist=player.position.distanceTo(layla.position);nearLayla=dist<2.65&&started&&!dialogueOpen;interaction.hidden=!nearLayla||dialogueOpen;
- const target=new THREE.Vector3(player.position.x,player.position.y+1.35,player.position.z);camTarget.lerp(target,1-Math.exp(-6*dt));
- const radius=7.5,cp=Math.cos(pitch),sp=Math.sin(pitch);desiredCamera.set(camTarget.x+Math.sin(yaw)*radius*cp,camTarget.y+2.1+sp*radius,camTarget.z+Math.cos(yaw)*radius*cp);camera.position.lerp(desiredCamera,1-Math.exp(-5*dt));camera.lookAt(camTarget);
+ const target=new THREE.Vector3(player.position.x,player.position.y+1.35,player.position.z);camTarget.lerp(target,1-Math.exp(-12*dt));
+ const radius=6.4,cp=Math.cos(pitch),sp=Math.sin(pitch);desiredCamera.set(camTarget.x+Math.sin(yaw)*radius*cp,camTarget.y+2.1+sp*radius,camTarget.z+Math.cos(yaw)*radius*cp);camera.position.lerp(desiredCamera,1-Math.exp(-10*dt));camera.lookAt(camTarget);
  pollen.rotation.y=t*.012;updateFauna?.(dt,t);worldAssets.update(dt,t);lanterns.forEach((l,i)=>{l.intensity=1.15+Math.sin(t*2+i)*.13;});
 }
 window.__LAYLA_BOOT_STAGE='Character created; starting animation loop';
